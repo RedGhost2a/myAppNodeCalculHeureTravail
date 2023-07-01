@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mapService = require('../_service/map');
+const workingHourService = require("../_service/workingHour");
 
 // routes
 router.get('/', getAll);
@@ -8,6 +9,7 @@ router.get('/:id', getById);
 router.post('/', create);
 router.put('/:id', update);
 router.delete('/:id', _delete);
+router.get('/totalMaps/:month', getTotalMapsForMonth);
 
 module.exports = router;
 
@@ -15,6 +17,12 @@ function getAll(req, res, next) {
     mapService.getAll()
         .then(map => res.json(map))
         .catch(next);
+}
+function getTotalMapsForMonth(req,res,next){
+    const month = req.params.month;
+    mapService.getTotalMapsForMonth(month)
+        .then(map => res.json(map))
+        .catch(next)
 }
 
 function getById(req, res, next) {

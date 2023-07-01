@@ -30,11 +30,37 @@ async function remove(id) {
     if (!Maps) throw 'Calendar not found';
     await Maps.destroy();
 }
+async function getTotalMapsForMonth(month){
+    try {
+        month = month < 10 ? `0${month}` : `${month}`;
+
+        const calendars = await db.Calendar.findAll({
+            attributes: ['id'],
+            where: db.sequelize.where(db.sequelize.fn('strftime', '%m', db.sequelize.col('date')), month)
+        });
+
+        const calendarIds = calendars.map(calendar => calendar.id);
+
+        console.log(`Retrieved calendar IDs for month ${month}:`, calendarIds);
+
+        const maps = await db.Maps.findAll({ where: { calendarId: calendarIds }});
+
+
+
+
+        return { maps };
+
+    } catch (error) {
+        console.error(`Failed to retrieve total hours for month ${month}:`, error);
+        throw error;
+    }
+};
 
 module.exports = {
     getAll,
     getById,
     create,
     update,
-    remove
+    remove,
+    getTotalMapsForMonth
 };
